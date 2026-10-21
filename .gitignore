@@ -1,0 +1,18 @@
+# MacOS
+.DS_Store
+
+# Compiled Executables
+benchmark_core
+benchmark_sift
+benchmark_metrics
+
+# Data files & Archives
+sift/
+*.bin
+*.fvecs
+*.ivecs
+*.tar.gz
+
+# Python & Build Artifacts
+*.so
+__pycache__/
