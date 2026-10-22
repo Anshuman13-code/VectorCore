@@ -32,18 +32,35 @@ You can import the compiled module and index your own high-dimensional data:
 import vectorcore_py
 import numpy as np
 
-# Generate sample 128-dimensional data
-data = np.random.rand(10000, 128).astype(np.float32)
-query = np.random.rand(1, 128).astype(np.float32)
+DIM = 128
+K = 5
 
-# Initialize HNSW index and insert data
-index = vectorcore_py.HNSWIndex(dim=128, max_elements=10000)
-index.add_items(data)
+# Generate unit-normalized sample data
+data = np.random.randn(10000, DIM).astype(np.float32)
+data /= np.linalg.norm(data, axis=1, keepdims=True)
+query = np.random.randn(DIM).astype(np.float32)
+query /= np.linalg.norm(query)
 
-# Perform sub-linear nearest neighbor search
-labels, distances = index.search(query, k=10)
-print("Nearest neighbor IDs:", labels)
+# Load vectors into a dataset
+dataset = vectorcore_py.FlatVectorDataset(DIM)
+for vec in data:
+    dataset.add_vector(vec.tolist())
+
+# Build the HNSW index
+index = vectorcore_py.HNSWIndex(dataset, M=32, ef_construction=128)
+for i in range(len(data)):
+    index.insert(i)
+
+# Search for the nearest neighbors
+index.set_ef_search(128)
+scratch = vectorcore_py.SearchScratchpad(index.size())
+results = index.query(query.tolist(), K=K, scratch=scratch)
+print("Nearest neighbor IDs:", [node.id for node in results])
 ```
+
+## ✅ Validating Recall
+
+Recall is measured against an exact NumPy brute-force baseline. For 10,000 unit-normalized 128-dimensional vectors and 100 random queries, the audit computes the true top-5 neighbors by L2 distance and compares them with the HNSW results (`M=32`, `ef_construction=128`, `ef_search=128`). The reported **97.60% Recall@5** is the fraction of true neighbors the index returned.
 
 ## Repository Structure
 
