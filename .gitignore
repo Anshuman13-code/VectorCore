@@ -1,18 +1,26 @@
-# MacOS
+cat << 'EOF' > .gitignore
 .DS_Store
-
-# Compiled Executables
-benchmark_core
-benchmark_sift
-benchmark_metrics
-
-# Data files & Archives
 sift/
 *.bin
 *.fvecs
 *.ivecs
 *.tar.gz
-
-# Python & Build Artifacts
+*.o
 *.so
+*.dylib
+benchmark_core
+benchmark_metrics
+benchmark_sift
+benchmark_sift1m
+benchmark_simd
+brute_force
+hnsw_benchmark
+simd_test
+test_persistence
+benchmark_simd.cpp
+brute_force.cpp
+hnsw_benchmark.cpp
+simd_test.cpp
 __pycache__/
+*.pyc
+EOF
